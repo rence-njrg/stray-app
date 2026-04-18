@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stray — Discover</title>
+  <link rel="stylesheet" href="/style/style.css" />
+  <style>
+    .home-greeting {
+      padding: 24px 0 20px;
+    }
+    .greeting-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+    .greeting-headline {
+      font-family: var(--ff-display);
+      font-size: 1.5rem;
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+    .greeting-sub {
+      font-size: 0.85rem;
+      color: var(--stone);
+      margin-top: 6px;
+    }
+
+    /* Mode cards */
+    .mode-card {
+      background: var(--white);
+      border: 1px solid var(--cream-mid);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all .18s;
+    }
+    .mode-card:hover { border-color: var(--green); box-shadow: var(--shadow-sm); }
+    .mode-card.active { border-color: var(--green); background: var(--green-pale); }
+    .mode-card__left {}
+    .mode-card__title { font-size: 0.95rem; font-weight: 600; margin-bottom: 3px; }
+    .mode-card.active .mode-card__title { color: var(--green); }
+    .mode-card__desc { font-size: 0.8rem; color: var(--stone); }
+    .mode-card__arrow {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--cream-mid);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--stone);
+      flex-shrink: 0;
+      transition: all .18s;
+    }
+    .mode-card:hover .mode-card__arrow,
+    .mode-card.active .mode-card__arrow {
+      background: var(--green);
+      border-color: var(--green);
+      color: var(--cream);
+    }
+
+    /* Route input panel */
+    .route-panel {
+      background: var(--white);
+      border: 1px solid var(--cream-mid);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 20px;
+      display: none;
+      animation: fadeUp .3s ease both;
+    }
+    .route-panel.visible { display: block; }
+
+    .route-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .route-dot-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding-top: 14px;
+    }
+    .route-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .route-dot--start { background: var(--green); }
+    .route-dot--end   { background: var(--amber); }
+    .route-line { width: 1px; flex: 1; background: var(--cream-mid); }
+
+    .detour-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-bottom: 8px;
+    }
+
+    /* Weekend panel */
+    .time-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+
+    /* Recent gems strip */
+    .gem-strip { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+    .gem-strip::-webkit-scrollbar { display: none; }
+    .gem-strip-card {
+      flex-shrink: 0;
+      width: 200px;
+      scroll-snap-align: start;
+      background: var(--white);
+      border: 1px solid var(--cream-mid);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow .18s;
+    }
+    .gem-strip-card:hover { box-shadow: var(--shadow-md); }
+    .gem-strip-card__img {
+      height: 110px;
+      background: var(--cream-mid);
+      position: relative;
+      overflow: hidden;
+    }
+    .gem-strip-card__img--green { background: linear-gradient(135deg, #d4edda 0%, #a8d5b5 100%); }
+    .gem-strip-card__img--amber { background: linear-gradient(135deg, #faeeda 0%, #f0c888 100%); }
+    .gem-strip-card__img--red   { background: linear-gradient(135deg, #faece7 0%, #e8a880 100%); }
+    .gem-strip-card__img--teal  { background: linear-gradient(135deg, #e1f5ee 0%, #8ecfb8 100%); }
+    .gem-strip-card__body { padding: 12px; }
+    .gem-strip-card__name { font-size: 0.85rem; font-weight: 600; margin-bottom: 3px; line-height: 1.3; }
+    .gem-strip-card__meta { font-size: 0.72rem; color: var(--stone); }
+  </style>
+</head>
+<body class="has-bottom-nav">
+
+<!-- Top nav -->
+<div style="position:sticky;top:0;z-index:100;background:var(--cream);border-bottom:1px solid var(--cream-mid);">
+  <div style="max-width:460px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:60px;">
+    <div style="font-family:var(--ff-display);font-size:1.4rem;color:var(--green);letter-spacing:-0.04em;">stray</div>
+    <div style="display:flex;gap:4px;">
+      <a href="trails.html" class="nav__icon-btn" title="Trails">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M3 5h10M3 15h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </a>
+      <a href="settings.html" class="nav__icon-btn" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- Greeting -->
+  <div class="home-greeting fade-up">
+    <p class="greeting-eyebrow">Saturday · Nairobi</p>
+    <h1 class="greeting-headline">The Rift Valley has<br>good light this weekend.</h1>
+    <p class="greeting-sub">7 gems within 2 hrs that match your style.</p>
+  </div>
+
+  <!-- Mode selector -->
+  <div class="section fade-up fade-up--1">
+    <p style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--stone);margin-bottom:12px;">How are you travelling?</p>
+
+    <div class="mode-card active" id="modeRoute" onclick="setMode('route')">
+      <div class="mode-card__left">
+        <p class="mode-card__title">On a route</p>
+        <p class="mode-card__desc">Find gems along a specific drive</p>
+      </div>
+      <div class="mode-card__arrow">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="mode-card" id="modeWeekend" onclick="setMode('weekend')">
+      <div class="mode-card__left">
+        <p class="mode-card__title">Weekend from here</p>
+        <p class="mode-card__desc">What's reachable in a day or two</p>
+      </div>
+      <div class="mode-card__arrow">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="mode-card" id="modeNearby" onclick="setMode('nearby')">
+      <div class="mode-card__left">
+        <p class="mode-card__title">Explore nearby</p>
+        <p class="mode-card__desc">See what's around you right now</p>
+      </div>
+      <div class="mode-card__arrow">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route input panel -->
+  <div class="route-panel visible" id="panelRoute">
+    <p style="font-family:var(--ff-display);font-size:1rem;margin-bottom:14px;">Where are you headed?</p>
+    <div style="display:grid;grid-template-columns:16px 1fr;gap:10px;align-items:center;margin-bottom:14px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;height:80px;justify-content:center;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);"></div>
+        <div style="width:1px;flex:1;background:var(--cream-mid);"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <input class="input" type="text" placeholder="From — Nairobi" />
+        <input class="input" type="text" placeholder="To — Mombasa, Nakuru, anywhere…" />
+      </div>
+    </div>
+    <p class="detour-label">How far off-route is fine?</p>
+    <div class="pill-group mb-16" id="detourPills">
+      <span class="pill-select" data-v="5">5 km</span>
+      <span class="pill-select active" data-v="15">15 km</span>
+      <span class="pill-select" data-v="30">30 km</span>
+      <span class="pill-select" data-v="0">Any</span>
+    </div>
+    <a href="results.html" class="btn btn--primary btn--full">Find what's on the way →</a>
+  </div>
+
+  <!-- Weekend input panel -->
+  <div class="route-panel" id="panelWeekend">
+    <p style="font-family:var(--ff-display);font-size:1rem;margin-bottom:6px;">How much time do you have?</p>
+    <p style="font-size:0.82rem;color:var(--stone);margin-bottom:14px;">We'll show everything reachable from Nairobi.</p>
+    <p class="detour-label">Max drive from Nairobi</p>
+    <div class="time-grid mb-16" id="timePills">
+      <span class="pill-select" data-v="1h">1 hr</span>
+      <span class="pill-select active" data-v="2h">2 hrs</span>
+      <span class="pill-select" data-v="3h">3 hrs</span>
+      <span class="pill-select" data-v="day">Full day out</span>
+    </div>
+    <p class="detour-label">What are you in the mood for?</p>
+    <div class="pill-group mb-16" id="moodPills">
+      <span class="pill-select active">Peaceful</span>
+      <span class="pill-select">Adventure</span>
+      <span class="pill-select">Food</span>
+      <span class="pill-select">Swimming</span>
+      <span class="pill-select">Scenic drive</span>
+    </div>
+    <a href="results.html" class="btn btn--primary btn--full">Show me the options →</a>
+  </div>
+
+  <!-- Nearby panel -->
+  <div class="route-panel" id="panelNearby">
+    <p style="font-family:var(--ff-display);font-size:1rem;margin-bottom:6px;">What's around you right now?</p>
+    <p style="font-size:0.82rem;color:var(--stone);margin-bottom:14px;">Using your current location to find gems nearby.</p>
+    <p class="detour-label">Search radius</p>
+    <div class="pill-group mb-16" id="radiusPills">
+      <span class="pill-select" data-v="10">10 km</span>
+      <span class="pill-select active" data-v="25">25 km</span>
+      <span class="pill-select" data-v="50">50 km</span>
+      <span class="pill-select" data-v="100">100 km</span>
+    </div>
+    <a href="results.html" class="btn btn--primary btn--full">Find nearby gems →</a>
+  </div>
+
+  <!-- Recently added -->
+  <div class="section fade-up fade-up--3">
+    <div class="section-header">
+      <h2>Recently added</h2>
+      <a href="results.html">See all</a>
+    </div>
+    <div class="gem-strip">
+      <a href="gem.html" class="gem-strip-card">
+        <div class="gem-strip-card__img gem-strip-card__img--green"></div>
+        <div class="gem-strip-card__body">
+          <p class="gem-strip-card__name">Fourteen Forks</p>
+          <p class="gem-strip-card__meta">Aberdare · 23 reviews</p>
+        </div>
+      </a>
+      <a href="gem.html" class="gem-strip-card">
+        <div class="gem-strip-card__img gem-strip-card__img--amber"></div>
+        <div class="gem-strip-card__body">
+          <p class="gem-strip-card__name">Mama Wanjiru's</p>
+          <p class="gem-strip-card__meta">Limuru Rd · 61 reviews</p>
+        </div>
+      </a>
+      <a href="gem.html" class="gem-strip-card">
+        <div class="gem-strip-card__img gem-strip-card__img--teal"></div>
+        <div class="gem-strip-card__body">
+          <p class="gem-strip-card__name">Hot Springs, Bogoria</p>
+          <p class="gem-strip-card__meta">Rift Valley · 118 reviews</p>
+        </div>
+      </a>
+      <a href="gem.html" class="gem-strip-card">
+        <div class="gem-strip-card__img gem-strip-card__img--red"></div>
+        <div class="gem-strip-card__body">
+          <p class="gem-strip-card__name">Ol Donyo Sabuk gorge</p>
+          <p class="gem-strip-card__meta">Thika · 44 reviews</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav" width= 50px>
+  <a href="discover.html" class="bottom-nav__item active">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Discover
+  </a>
+  <a href="results.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Search
+  </a>
+  <a href="trails.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><path d="M5 10h10M5 6h7M5 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Trails
+  </a>
+  <a href="submit.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Submit
+  </a>
+  <a href="settings.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 17c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Profile
+  </a>
+</nav>
+
+<script>
+  function setMode(m) {
+    ['route','weekend','nearby'].forEach(mode => {
+      document.getElementById('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.remove('active');
+      document.getElementById('panel' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.remove('visible');
+    });
+    document.getElementById('mode' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active');
+    document.getElementById('panel' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('visible');
+  }
+
+  // Single-select pill groups
+  ['detourPills','timePills','moodPills','radiusPills'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', e => {
+      if (!e.target.classList.contains('pill-select')) return;
+      if (id === 'moodPills') { e.target.classList.toggle('active'); return; }
+      el.querySelectorAll('.pill-select').forEach(p => p.classList.remove('active'));
+      e.target.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

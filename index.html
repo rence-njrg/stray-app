@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stray — The places that locals know and algorithms don't</title>
+  <link rel="stylesheet" href="/style/style.css" />
+  <style>
+    body { background: var(--black); color: var(--cream); overflow-x: hidden; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 0 24px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .hero__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 0;
+    }
+
+    .hero__logo {
+      font-family: var(--ff-display);
+      font-size: 1.8rem;
+      color: var(--green-pale);
+      letter-spacing: -0.05em;
+    }
+
+    .hero__signin {
+      font-size: 0.82rem;
+      color: rgba(245,240,232,0.55);
+      font-weight: 500;
+      padding: 8px 14px;
+      border: 1px solid rgba(245,240,232,0.15);
+      border-radius: var(--radius-md);
+      transition: all .2s;
+    }
+    .hero__signin:hover { color: var(--cream); border-color: rgba(245,240,232,0.35); }
+
+    .hero__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px 0 32px;
+    }
+
+    .hero__eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 20px;
+    }
+
+    .hero__headline {
+      font-family: var(--ff-display);
+      font-size: clamp(2.4rem, 8vw, 3.4rem);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--cream);
+      margin-bottom: 24px;
+    }
+    .hero__headline em {
+      font-style: italic;
+      color: var(--green-pale);
+    }
+
+    .hero__sub {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: rgba(245,240,232,0.6);
+      max-width: 340px;
+      margin-bottom: 36px;
+    }
+
+    .hero__cta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn--hero {
+      padding: 16px 28px;
+      background: var(--green);
+      color: var(--cream);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 500;
+      border: none;
+      width: 100%;
+      text-align: center;
+      transition: background .2s, transform .15s;
+    }
+    .btn--hero:hover { background: var(--green-mid); transform: translateY(-1px); }
+    .btn--hero:active { transform: scale(0.98); }
+
+    .btn--hero-ghost {
+      padding: 14px 28px;
+      background: transparent;
+      color: rgba(245,240,232,0.55);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid rgba(245,240,232,0.12);
+      width: 100%;
+      text-align: center;
+      transition: all .2s;
+    }
+    .btn--hero-ghost:hover { color: var(--cream); border-color: rgba(245,240,232,0.3); }
+
+    /* Proof strip */
+    .hero__proof {
+      padding: 20px 0 36px;
+      border-top: 1px solid rgba(245,240,232,0.08);
+    }
+    .proof-items { display: flex; gap: 24px; }
+    .proof-item__num {
+      font-family: var(--ff-display);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--cream);
+    }
+    .proof-item__label {
+      font-size: 0.72rem;
+      color: rgba(245,240,232,0.4);
+      margin-top: 2px;
+    }
+    .proof-divider { width: 1px; background: rgba(245,240,232,0.1); }
+
+    /* Feature strip */
+    .features {
+      background: var(--cream);
+      color: var(--black);
+      padding: 48px 24px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .feature-item { display: flex; gap: 16px; margin-bottom: 28px; align-items: flex-start; }
+    .feature-item:last-child { margin-bottom: 0; }
+    .feature-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .feature-item h3 { font-family: var(--ff-display); font-size: 1.05rem; font-weight: 500; margin-bottom: 4px; }
+    .feature-item p  { font-size: 0.85rem; color: var(--stone); line-height: 1.6; }
+
+    /* Sample gems */
+    .sample-section {
+      background: var(--black);
+      padding: 40px 24px 48px;
+    }
+    .sample-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.35);
+      margin-bottom: 20px;
+    }
+    .sample-gem {
+      border: 1px solid rgba(245,240,232,0.1);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .sample-gem__name { font-family: var(--ff-display); font-size: 1rem; color: var(--cream); margin-bottom: 4px; }
+    .sample-gem__meta { font-size: 0.78rem; color: rgba(245,240,232,0.4); margin-bottom: 8px; }
+    .sample-gem__snippet { font-size: 0.82rem; color: rgba(245,240,232,0.65); line-height: 1.6; font-style: italic; }
+
+    /* Footer */
+    .landing-footer {
+      background: var(--black);
+      padding: 24px;
+      text-align: center;
+      border-top: 1px solid rgba(245,240,232,0.06);
+    }
+    .landing-footer p { font-size: 0.75rem; color: rgba(245,240,232,0.25); }
+  </style>
+</head>
+<body>
+
+<div class="hero fade-up">
+  <div class="hero__top">
+    <div class="hero__logo">stray</div>
+    <a href="signin.html" class="hero__signin">Sign in</a>
+  </div>
+
+  <div class="hero__body">
+    <p class="hero__eyebrow">East Africa's niche travel guide</p>
+    <h1 class="hero__headline">
+      The places that<br>locals know and<br><em>algorithms don't.</em>
+    </h1>
+    <p class="hero__sub">
+      Stopovers, weekend spots, and everything worth the detour — curated by people who've actually been.
+    </p>
+    <div class="hero__cta">
+      <a href="onboarding.html" class="btn--hero">Find somewhere worth going</a>
+      <a href="discover.html" class="btn--hero-ghost">Browse without signing up</a>
+    </div>
+  </div>
+
+  <div class="hero__proof">
+    <div class="proof-items">
+      <div class="proof-item">
+        <div class="proof-item__num">214</div>
+        <div class="proof-item__label">Verified gems</div>
+      </div>
+      <div class="proof-divider"></div>
+      <div class="proof-item">
+        <div class="proof-item__num">7 regions</div>
+        <div class="proof-item__label">Across East Africa</div>
+      </div>
+      <div class="proof-divider"></div>
+      <div class="proof-item">
+        <div class="proof-item__num">&lt;200</div>
+        <div class="proof-item__label">Google reviews max</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Features -->
+<div class="features fade-up fade-up--2">
+  <p style="font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--stone);margin-bottom:24px;">How it works</p>
+  <div class="feature-item">
+    <div class="feature-dot"></div>
+    <div>
+      <h3>Tell us your route</h3>
+      <p>Enter where you're driving. We find every gem within 15 km of your path — not a bounding box, but an actual corridor along your road.</p>
+    </div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-dot"></div>
+    <div>
+      <h3>Every place is scored for niche-ness</h3>
+      <p>Anything with more than 200 Google reviews doesn't qualify. We re-check scores weekly — when a place gets popular, we flag it.</p>
+    </div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-dot"></div>
+    <div>
+      <h3>Curated by people, not algorithms</h3>
+      <p>Every gem is reviewed by our team or a verified local strayer before it goes live. We'd rather have 200 great places than 2,000 average ones.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Sample gems teaser -->
+<div class="sample-section fade-up fade-up--3" style="max-width:480px;margin:0 auto;">
+  <p class="sample-label">A few of what's waiting</p>
+  <div class="sample-gem">
+    <p class="sample-gem__name">Fourteen Forks, Aberdare</p>
+    <p class="sample-gem__meta">23 Google reviews · 1 hr 20 min from Nairobi · Nature</p>
+    <p class="sample-gem__snippet">"Where fourteen streams converge in the middle of Aberdare Forest. On a weekday, you'll probably have it to yourself."</p>
+  </div>
+  <div class="sample-gem">
+    <p class="sample-gem__name">Mama Wanjiru's, Limuru Rd</p>
+    <p class="sample-gem__meta">61 Google reviews · Roadside · Food</p>
+    <p class="sample-gem__snippet">"The best nyama choma between Nairobi and Nakuru. Order the ribs. Cash only."</p>
+  </div>
+  <div class="sample-gem">
+    <p class="sample-gem__name">Hot Springs, Bogoria</p>
+    <p class="sample-gem__meta">118 Google reviews · 3 hrs from Nairobi · Adventure</p>
+    <p class="sample-gem__snippet">"Walk the shore at dusk when the flamingos come in. The springs are hot enough to cook an egg."</p>
+  </div>
+  <a href="onboarding.html" class="btn--hero" style="margin-top:20px;display:block;text-align:center;">See gems near you</a>
+</div>
+
+<div class="landing-footer">
+  <p>Stray · Based in Nairobi · &copy; 2025</p>
+</div>
+
+</body>
+</html>

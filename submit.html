@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stray — Submit a place</title>
+  <link rel="stylesheet" href="/style/style.css" />
+  <style>
+    .submit-intro {
+      background: var(--green);
+      color: var(--cream);
+      padding: 20px;
+      margin: 0 -20px 24px;
+    }
+    .submit-intro h2 { font-family: var(--ff-display); font-size: 1.3rem; font-weight: 400; margin-bottom: 6px; }
+    .submit-intro p  { font-size: 0.82rem; line-height: 1.6; color: rgba(245,240,232,0.75); }
+
+    .criteria-list { margin: 0 0 20px; }
+    .criteria-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--cream-mid);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    .criteria-item:last-child { border-bottom: none; }
+    .criteria-icon { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+    .criteria-icon--pass { color: var(--green); }
+    .criteria-icon--fail { color: var(--danger); }
+
+    .map-placeholder {
+      width: 100%;
+      height: 180px;
+      background: var(--cream-mid);
+      border: 1px solid var(--stone-light);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color .15s;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+    .map-placeholder:hover { border-color: var(--green); }
+    .map-placeholder svg { color: var(--stone); }
+    .map-placeholder p { font-size: 0.82rem; color: var(--stone); }
+
+    .photo-upload {
+      border: 1.5px dashed var(--stone-light);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .photo-upload:hover { border-color: var(--green); background: var(--green-pale); }
+    .photo-upload svg { color: var(--stone); margin-bottom: 8px; }
+    .photo-upload p { font-size: 0.82rem; color: var(--stone); }
+
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: 48px 0;
+    }
+    .success-state.show { display: block; }
+    .success-icon {
+      width: 56px; height: 56px;
+      background: var(--green-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+  </style>
+</head>
+<body class="has-bottom-nav">
+
+<div style="position:sticky;top:0;z-index:100;background:var(--cream);border-bottom:1px solid var(--cream-mid);">
+  <div style="max-width:460px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:0 20px;height:60px;">
+    <a href="discover.html" style="color:var(--stone);">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M13 16L7 10l6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <h1 style="font-family:var(--ff-display);font-size:1.1rem;font-weight:500;">Submit a place</h1>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- Form state -->
+  <div id="formState">
+    <div class="submit-intro">
+      <h2>Know a place that should be on Stray?</h2>
+      <p>Not everywhere makes the cut — but if it's genuinely niche and you've actually been, we want to know about it.</p>
+    </div>
+
+    <!-- Criteria -->
+    <p style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--stone);margin-bottom:10px;">What qualifies</p>
+    <div class="criteria-list">
+      <div class="criteria-item">
+        <svg class="criteria-icon criteria-icon--pass" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Fewer than 200 Google reviews
+      </div>
+      <div class="criteria-item">
+        <svg class="criteria-icon criteria-icon--pass" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        You've been there yourself
+      </div>
+      <div class="criteria-item">
+        <svg class="criteria-icon criteria-icon--pass" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Not on any major travel guide or itinerary site
+      </div>
+      <div class="criteria-item">
+        <svg class="criteria-icon criteria-icon--fail" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 10.5l5-5M10.5 10.5l-5-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        We don't list restaurants already on major delivery apps
+      </div>
+      <div class="criteria-item">
+        <svg class="criteria-icon criteria-icon--fail" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 10.5l5-5M10.5 10.5l-5-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        No established hotels, lodges, or chain businesses
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Form -->
+    <div class="field">
+      <label>What's it called?</label>
+      <input class="input" type="text" id="placeName" placeholder="Name or what locals call it" />
+    </div>
+
+    <div class="field">
+      <label>Category</label>
+      <select class="select" id="category">
+        <option value="">Select a category…</option>
+        <option>Nature / outdoors</option>
+        <option>Food &amp; drink</option>
+        <option>Adventure</option>
+        <option>Swimming / water</option>
+        <option>Historic</option>
+        <option>Scenic viewpoint</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Pin it on the map</label>
+      <div class="map-placeholder" onclick="this.innerHTML='<p style=\'color:var(--green);font-size:0.82rem;font-weight:500;\'>Pin dropped — tap to adjust</p>'">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor" opacity="0.4"/></svg>
+        <p>Tap to drop a pin</p>
+      </div>
+      <p class="field-hint">Or paste coordinates: lat, lng</p>
+      <input class="input" type="text" placeholder="-0.7893, 36.8219" />
+    </div>
+
+    <div class="field">
+      <label>Describe it in your own words</label>
+      <textarea class="textarea" id="description" rows="5" placeholder="What makes it worth going? What should someone know before they get there? Be specific — not 'it's amazing', but 'the track floods in rain' or 'arrive before 9am'."></textarea>
+      <p class="field-hint">Don't sell it — just describe it. We'll write the proper listing if it goes live.</p>
+    </div>
+
+    <div class="field">
+      <label>Good to know</label>
+      <textarea class="textarea" placeholder="Practical notes: entry fee, best time to go, what to bring, anything that would help someone plan." rows="3"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Add a photo (optional but helps)</label>
+      <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="2" y="6" width="24" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="15" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M10 6l1.5-3h5L18 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <p>Tap to add a photo from your phone</p>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" style="display:none;" />
+    </div>
+
+    <div class="field">
+      <label>Your name or handle (optional)</label>
+      <input class="input" type="text" placeholder="If it goes live, you'll be credited as the strayer who found it" />
+    </div>
+
+    <div style="padding-bottom:32px;">
+      <button class="btn btn--primary btn--full btn--lg" onclick="submitForm()">Submit for review</button>
+      <p style="font-size:0.75rem;color:var(--stone);text-align:center;margin-top:12px;">We check every submission before it goes live — usually within 3–5 days.</p>
+    </div>
+  </div>
+
+  <!-- Success state -->
+  <div id="successState" class="success-state">
+    <div class="success-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-9" stroke="#2D5016" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2 style="font-family:var(--ff-display);font-size:1.4rem;font-weight:400;margin-bottom:10px;">We've got it.</h2>
+    <p style="font-size:0.88rem;color:var(--stone);line-height:1.7;max-width:280px;margin:0 auto 28px;">One of our team will take a look. We check every submission before it goes live — usually within 3–5 days. If it makes the cut, you'll be named as the strayer who found it.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto;">
+      <a href="discover.html" class="btn btn--primary btn--full">Back to discovering</a>
+      <button class="btn btn--outline btn--full" onclick="resetForm()">Submit another place</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav">
+  <a href="discover.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Discover
+  </a>
+  <a href="results.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Search
+  </a>
+  <a href="trails.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><path d="M5 10h10M5 6h7M5 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Trails
+  </a>
+  <a href="submit.html" class="bottom-nav__item active">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Submit
+  </a>
+  <a href="settings.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 17c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Profile
+  </a>
+</nav>
+
+<script>
+  function submitForm() {
+    const name = document.getElementById('placeName').value.trim();
+    const desc = document.getElementById('description').value.trim();
+    if (!name) { alert('Please add a name for this place.'); return; }
+    document.getElementById('formState').style.display = 'none';
+    document.getElementById('successState').classList.add('show');
+    window.scrollTo(0, 0);
+  }
+  function resetForm() {
+    document.getElementById('formState').style.display = 'block';
+    document.getElementById('successState').classList.remove('show');
+    document.getElementById('placeName').value = '';
+    document.getElementById('description').value = '';
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stray — Fourteen Forks</title>
+  <link rel="stylesheet" href="/style/style.css" />
+  <style>
+    /* Hero image */
+    .gem-hero {
+      width: 100%;
+      height: 260px;
+      background: linear-gradient(160deg, #d4edda 0%, #6db88a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .gem-hero__back {
+      position: absolute;
+      top: 16px; left: 16px;
+      width: 36px; height: 36px;
+      background: rgba(245,240,232,0.88);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .gem-hero__save {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 36px; height: 36px;
+      background: rgba(245,240,232,0.88);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: background .15s;
+    }
+    .gem-hero__save.saved { background: var(--green); }
+    .gem-hero__save.saved svg { color: var(--cream); }
+
+    /* Niche indicator */
+    .niche-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0 14px;
+    }
+    .niche-bar__label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--stone); }
+    .niche-track { flex: 1; height: 5px; background: var(--cream-mid); border-radius: 3px; overflow: hidden; }
+    .niche-fill { height: 100%; background: var(--green); border-radius: 3px; }
+    .niche-score { font-size: 0.78rem; font-weight: 600; color: var(--green); }
+
+    /* Meta grid */
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .meta-item {
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+    }
+    .meta-item__label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--stone); margin-bottom: 3px; }
+    .meta-item__val { font-size: 0.88rem; font-weight: 500; color: var(--black); }
+
+    /* Know before you go */
+    .know-list { list-style: none; }
+    .know-list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--cream-mid);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .know-list li:last-child { border-bottom: none; }
+    .know-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-top: 7px; flex-shrink: 0; }
+
+    /* Community note */
+    .community-note {
+      background: var(--cream);
+      border-left: 3px solid var(--green);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 12px 14px;
+    }
+    .community-note__author { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--stone); margin-bottom: 6px; }
+    .community-note__text { font-size: 0.85rem; line-height: 1.6; font-style: italic; color: var(--black); }
+
+    /* Graduating gem warning */
+    .graduating-warn {
+      background: var(--amber-light);
+      border: 1px solid var(--amber-mid);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .graduating-warn svg { color: var(--amber); flex-shrink: 0; margin-top: 2px; }
+    .graduating-warn p { font-size: 0.82rem; line-height: 1.55; color: #633806; margin: 0; }
+    .graduating-warn strong { font-weight: 600; }
+
+    /* Action bar */
+    .action-bar {
+      display: flex;
+      gap: 8px;
+      padding: 16px 0 32px;
+    }
+    .action-bar .btn--primary { flex: 2; }
+    .action-bar .btn--outline { flex: 1; }
+
+    /* Trail save modal */
+    .trail-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,20,0.5);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .trail-modal-overlay.open { display: flex; }
+    .trail-modal {
+      background: var(--white);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: 24px 20px 40px;
+      width: 100%;
+      max-width: 460px;
+      animation: fadeUp .3s ease both;
+    }
+    .trail-modal h3 { font-family: var(--ff-display); font-size: 1.1rem; margin-bottom: 16px; }
+    .trail-option {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--cream-mid);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .trail-option:hover { color: var(--green); }
+    .trail-option svg { color: var(--stone); }
+  </style>
+</head>
+<body class="has-bottom-nav">
+
+<!-- Hero -->
+<div class="gem-hero">
+  <a href="results.html" class="gem-hero__back">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="#1A1A14" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  <div class="gem-hero__save" id="saveBtn" onclick="toggleSave()">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15L3 9c-1.5-1.5-1.5-4 0-5.5S7 2 8.5 3.5L9 4l.5-.5C11 2 13.5 2 15 3.5s1.5 4 0 5.5L9 15z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+
+<div style="max-width:460px;margin:0 auto;padding:0 20px;">
+
+  <!-- Badges -->
+  <div style="display:flex;flex-wrap:wrap;gap:6px;padding-top:16px;margin-bottom:10px;">
+    <span class="badge badge--green">Nature</span>
+    <span class="badge badge--stone">Aberdare region</span>
+    <span class="badge badge--stone">4WD useful</span>
+    <span class="badge badge--stone">Best: May–Aug</span>
+  </div>
+
+  <!-- Title -->
+  <h1 style="font-family:var(--ff-display);font-size:1.6rem;font-weight:400;letter-spacing:-0.02em;margin-bottom:4px;">Fourteen Forks</h1>
+  <p style="font-size:0.82rem;color:var(--stone);margin-bottom:12px;">Aberdare Forest, Central Kenya</p>
+
+  <!-- Niche score bar -->
+  <div class="niche-bar">
+    <span class="niche-bar__label">Niche score</span>
+    <div class="niche-track"><div class="niche-fill" style="width:84%"></div></div>
+    <span class="niche-score">84 / 100</span>
+  </div>
+
+  <!-- Graduating warning (shown when score drops) -->
+  <!-- <div class="graduating-warn">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 7v3M8 11.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    <p><strong>This place is getting popular.</strong> It's picked up 180 new Google reviews in the last 6 months. Still worth going — weekdays are better now.</p>
+  </div> -->
+
+  <!-- Meta grid -->
+  <div class="meta-grid">
+    <div class="meta-item">
+      <p class="meta-item__label">Google reviews</p>
+      <p class="meta-item__val">23</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-item__label">From Nairobi</p>
+      <p class="meta-item__val">1 hr 20 min</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-item__label">Best season</p>
+      <p class="meta-item__val">May – August</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-item__label">Entry fee</p>
+      <p class="meta-item__val">None (as of 2025)</p>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <p style="font-size:0.9rem;line-height:1.75;color:var(--black);margin-bottom:20px;">Where fourteen streams converge in the middle of Aberdare Forest. The track in takes about 25 minutes from the tarmac — rocky in places, but most cars handle it. There's a clearing at the junction with enough space to park and sit by the water. On a weekday you'll probably have it to yourself. On weekends, occasionally one or two other groups. Nobody sells food out here.</p>
+
+  <div class="divider"></div>
+
+  <!-- Know before you go -->
+  <h2 style="font-family:var(--ff-display);font-size:1rem;font-weight:500;margin-bottom:10px;">Good to know</h2>
+  <ul class="know-list">
+    <li><div class="know-dot"></div>Bring your own food and water. No vendors, no signal.</li>
+    <li><div class="know-dot"></div>The last 3 km of track floods in heavy rain. Check the weather before you go.</li>
+    <li><div class="know-dot"></div>Arrive before 9am for the best light through the trees.</li>
+    <li><div class="know-dot"></div>Entry is informal — no gate, no fee as of April 2025.</li>
+    <li><div class="know-dot"></div>Colobus monkeys are frequently spotted on the track in. Don't feed them.</li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <!-- Community note -->
+  <h2 style="font-family:var(--ff-display);font-size:1rem;font-weight:500;margin-bottom:10px;">From the strayers</h2>
+  <div class="community-note mb-12">
+    <p class="community-note__author">Strayer · March 2025</p>
+    <p class="community-note__text">"Came here on a Tuesday. Saw a troop of colobus monkeys crossing the stream about twenty minutes in. Didn't expect that."</p>
+  </div>
+  <div class="community-note">
+    <p class="community-note__author">Strayer · January 2025</p>
+    <p class="community-note__text">"The pool is swimmable in July when the rain stops. Bring a rope if you want to cross to the far bank."</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Also nearby -->
+  <div class="section-header">
+    <h2 style="font-family:var(--ff-display);font-size:1rem;font-weight:500;">Also on this route</h2>
+  </div>
+  <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;">
+    <a href="gem.html" style="flex-shrink:0;width:150px;background:var(--white);border:1px solid var(--cream-mid);border-radius:var(--radius-lg);overflow:hidden;">
+      <div style="height:80px;background:linear-gradient(135deg,#faeeda,#e8b86a);"></div>
+      <div style="padding:10px;">
+        <p style="font-size:0.8rem;font-weight:600;margin-bottom:2px;">Mama Wanjiru's</p>
+        <p style="font-size:0.7rem;color:var(--stone);">2 km off route</p>
+      </div>
+    </a>
+    <a href="gem.html" style="flex-shrink:0;width:150px;background:var(--white);border:1px solid var(--cream-mid);border-radius:var(--radius-lg);overflow:hidden;">
+      <div style="height:80px;background:linear-gradient(135deg,#e1f5ee,#7bbfaa);"></div>
+      <div style="padding:10px;">
+        <p style="font-size:0.8rem;font-weight:600;margin-bottom:2px;">Thompson's upper pool</p>
+        <p style="font-size:0.7rem;color:var(--stone);">12 km off route</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Action bar -->
+  <div class="action-bar">
+    <button class="btn btn--primary" onclick="document.querySelector('.trail-modal-overlay').classList.add('open')">Save to a trail</button>
+    <a href="https://maps.google.com" target="_blank" class="btn btn--outline">Directions</a>
+    <button class="btn btn--outline" onclick="navigator.share && navigator.share({title:'Fourteen Forks',url:window.location.href})">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11 4.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM11 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" fill="currentColor"/><path d="M5.5 7l5-2M5.5 9l5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<!-- Trail save modal -->
+<div class="trail-modal-overlay" id="trailModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="trail-modal">
+    <h3>Save to a trail</h3>
+    <div class="trail-option">
+      <span>Rift Valley weekend</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12L10 8 6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="trail-option">
+      <span>Nairobi day escapes</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12L10 8 6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="trail-option" style="color:var(--green);border-bottom:none;">
+      <span>+ Create new trail</span>
+    </div>
+    <button class="btn btn--primary btn--full mt-16" onclick="document.querySelector('.trail-modal-overlay').classList.remove('open');showToast()">Done</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--cream);padding:12px 20px;border-radius:var(--radius-md);font-size:0.85rem;z-index:300;white-space:nowrap;">
+  Saved to Rift Valley weekend.
+</div>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav">
+  <a href="discover.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Discover
+  </a>
+  <a href="results.html" class="bottom-nav__item active">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Search
+  </a>
+  <a href="trails.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><path d="M5 10h10M5 6h7M5 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Trails
+  </a>
+  <a href="submit.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Submit
+  </a>
+  <a href="settings.html" class="bottom-nav__item">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 17c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Profile
+  </a>
+</nav>
+
+<script>
+  function toggleSave() {
+    const btn = document.getElementById('saveBtn');
+    btn.classList.toggle('saved');
+  }
+  function showToast() {
+    const t = document.getElementById('toast');
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2800);
+  }
+</script>
+</body>
+</html>
